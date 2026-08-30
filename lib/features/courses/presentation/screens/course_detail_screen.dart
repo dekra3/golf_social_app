@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../profile/presentation/providers/profile_provider.dart';
 import '../../data/models/course_model.dart';
 import '../../data/models/tee_model.dart';
 import '../providers/courses_provider.dart';
@@ -43,10 +44,11 @@ class _CourseDetailScreenState extends ConsumerState<CourseDetailScreen> {
   Widget build(BuildContext context) {
     final course = _course;
     final tees = _tees;
+    final isAdmin = ref.watch(currentProfileProvider).value?.isCourseAdmin ?? false;
 
     return Scaffold(
       appBar: AppBar(title: Text(course?.name ?? 'Course')),
-      floatingActionButton: course == null
+      floatingActionButton: (course == null || !isAdmin)
           ? null
           : FloatingActionButton.extended(
               icon: const Icon(Icons.add),
