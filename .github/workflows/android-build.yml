@@ -1,0 +1,56 @@
+name: Flutter Android Build
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch: # Allows manual triggering from the GitHub UI
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Check out the repository code
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      # Step 2: Set up Java (Required for Android Gradle builds)
+      - name: Set up JDK
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'temurin'
+          java-version: '17' # Change to 11 if using older Flutter/Gradle versions
+          cache: 'gradle'
+
+      # Step 3: Set up Flutter Environment
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true # Caches Flutter dependency files automatically
+
+      # Step 4: Install Flutter Dependencies
+      - name: Install dependencies
+        run: flutter pub get
+
+      # Step 5: Run Code Verification (Optional but Recommended)
+      - name: Analyze code
+        run: flutter analyze
+
+      - name: Run tests
+        run: flutter test
+
+      # Step 6: Build the Production Android Release App
+      # Replace 'apk' with 'appbundle' if you are deploying directly to Google Play
+      - name: Build Android APK
+        run: flutter build apk --release
+
+      # Step 7: Upload the built APK file as a GitHub Artifact
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v5
+        with:
+          name: release-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
+          if-no-files-found: error
