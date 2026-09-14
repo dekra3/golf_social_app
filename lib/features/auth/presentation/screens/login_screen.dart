@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/error_utils.dart';
 import '../providers/auth_provider.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -40,7 +41,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           );
       // go_router's redirect (core/router.dart) sends the user on to /profile.
     } catch (e) {
-      setState(() => _errorMessage = 'Could not sign in. Check your email and password.');
+      setState(() => _errorMessage = friendlyErrorMessage(e));
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }

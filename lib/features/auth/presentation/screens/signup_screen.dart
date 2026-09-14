@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/error_utils.dart';
 import '../providers/auth_provider.dart';
 
 class SignUpScreen extends ConsumerStatefulWidget {
@@ -48,7 +49,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
         context.go('/login');
       }
     } catch (e) {
-      setState(() => _errorMessage = 'Could not create account. Try a different email.');
+      setState(() => _errorMessage = friendlyErrorMessage(e));
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
