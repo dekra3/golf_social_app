@@ -30,7 +30,7 @@ class TournamentsRepository {
         .from('tournaments')
         .select('*, courses(name), tees(name)')
         .filter('group_id', 'is', null)
-        .order('start_date');
+        .order('start_date', ascending: true);
     return (data as List)
         .map((row) => Tournament.fromJson(row))
         .where((t) => !joinedIds.contains(t.id))
@@ -78,7 +78,7 @@ class TournamentsRepository {
         .from('tournament_entries')
         .select('*, profiles(username, full_name, avatar_url)')
         .eq('tournament_id', tournamentId)
-        .order('joined_at');
+        .order('joined_at', ascending: true);
     return (data as List).map((row) => TournamentEntry.fromJson(row)).toList();
   }
 

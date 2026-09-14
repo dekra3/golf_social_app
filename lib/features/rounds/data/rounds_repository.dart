@@ -68,7 +68,7 @@ class RoundsRepository {
         .from('hole_scores')
         .select()
         .eq('round_id', roundId)
-        .order('hole_number');
+        .order('hole_number', ascending: true);
     return (data as List).map((row) => HoleScore.fromJson(row)).toList();
   }
 

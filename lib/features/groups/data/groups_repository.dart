@@ -62,7 +62,7 @@ class GroupsRepository {
         .from('group_members')
         .select('*, profiles(username, full_name, avatar_url)')
         .eq('group_id', groupId)
-        .order('joined_at');
+        .order('joined_at', ascending: true);
     return (data as List).map((row) => GroupMember.fromJson(row)).toList();
   }
 

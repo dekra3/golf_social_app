@@ -9,7 +9,7 @@ class CoursesRepository {
   final SupabaseClient _client;
 
   Future<List<Course>> getCourses() async {
-    final data = await _client.from('courses').select().order('name');
+    final data = await _client.from('courses').select().order('name', ascending: true);
     return (data as List).map((row) => Course.fromJson(row)).toList();
   }
 
@@ -25,7 +25,7 @@ class CoursesRepository {
 
   Future<List<Hole>> getHolesForTee(String teeId) async {
     final data =
-        await _client.from('holes').select().eq('tee_id', teeId).order('hole_number');
+        await _client.from('holes').select().eq('tee_id', teeId).order('hole_number', ascending: true);
     return (data as List).map((row) => Hole.fromJson(row)).toList();
   }
 

@@ -79,7 +79,7 @@ class FeedRepository {
         .from('comments')
         .select('*, profiles(username, full_name, avatar_url)')
         .eq('post_id', postId)
-        .order('created_at');
+        .order('created_at', ascending: true);
     return (data as List).map((row) => Comment.fromJson(row)).toList();
   }
 
