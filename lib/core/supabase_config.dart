@@ -12,11 +12,11 @@
 class SupabaseConfig {
   static const String url = String.fromEnvironment(
     'SUPABASE_URL',
-    defaultValue: '',
+    defaultValue: 'https://qirnrolcdscqhbrzeknj.supabase.co',
   );
 
   static const String publishableKey = String.fromEnvironment(
     'SUPABASE_PUBLISHABLE_KEY',
-    defaultValue: '',
+    defaultValue: 'sb_publishable_iaRTVW1eTi0ponX-fb2P1w_fiJzkDqQ',
   );
 }
