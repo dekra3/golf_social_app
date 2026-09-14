@@ -9,10 +9,16 @@ import 'core/theme.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+try {
   await Supabase.initialize(
     url: SupabaseConfig.url,
     publishableKey: SupabaseConfig.publishableKey,
   );
+  print("✅ Supabase initialized successfully!");
+} 
+catch (e) {
+    print("❌ Supabase initialization failed: $e");
+}
 
   runApp(const ProviderScope(child: GolfSocialApp()));
 }
