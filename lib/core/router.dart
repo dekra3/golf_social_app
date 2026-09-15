@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../features/auth/presentation/providers/auth_provider.dart';
 import '../features/auth/presentation/screens/login_screen.dart';
@@ -52,7 +53,14 @@ final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
     initialLocation: '/login',
     redirect: (context, state) {
-      final isSignedIn = ref.read(currentUserProvider) != null;
+      // Reads Supabase's own session state directly rather than through
+      // currentUserProvider — that provider updates via a separate stream
+      // subscription that isn't guaranteed to have processed the same
+      // sign-in event yet when this redirect check runs, which was
+      // causing sign-in to silently not navigate anywhere until the
+      // provider eventually caught up (or the app was restarted, forcing
+      // every provider to re-initialize from the now-current state).
+      final isSignedIn = Supabase.instance.client.auth.currentSession != null;
       final isAuthRoute = state.matchedLocation == '/login' || state.matchedLocation == '/signup';
 
       if (!isSignedIn && !isAuthRoute) return '/login';

@@ -39,7 +39,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             email: _emailController.text.trim(),
             password: _passwordController.text,
           );
-      // go_router's redirect (core/router.dart) sends the user on to /profile.
+      // Navigate explicitly rather than relying only on go_router's
+      // redirect to catch the auth-state change — belt and suspenders,
+      // since redirect is still there as a guard for direct URL access
+      // or an expired session elsewhere in the app.
+      if (mounted) context.go('/home');
     } catch (e) {
       setState(() => _errorMessage = friendlyErrorMessage(e));
     } finally {
