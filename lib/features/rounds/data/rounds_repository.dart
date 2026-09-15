@@ -75,4 +75,11 @@ class RoundsRepository {
   Future<void> completeRound(String roundId, int totalScore) async {
     await _client.from('rounds').update({'total_score': totalScore}).eq('id', roundId);
   }
+
+  /// Deletes a round — used both for canceling an in-progress round and
+  /// removing a completed one. hole_scores rows for it are removed
+  /// automatically via cascade.
+  Future<void> deleteRound(String roundId) async {
+    await _client.from('rounds').delete().eq('id', roundId);
+  }
 }

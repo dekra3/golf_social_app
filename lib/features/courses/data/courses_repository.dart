@@ -23,6 +23,11 @@ class CoursesRepository {
     return (data as List).map((row) => Tee.fromJson(row)).toList();
   }
 
+  Future<Tee> getTeeById(String teeId) async {
+    final data = await _client.from('tees').select().eq('id', teeId).single();
+    return Tee.fromJson(data);
+  }
+
   Future<List<Hole>> getHolesForTee(String teeId) async {
     final data =
         await _client.from('holes').select().eq('tee_id', teeId).order('hole_number', ascending: true);
@@ -92,5 +97,39 @@ class CoursesRepository {
     ]);
 
     return tee;
+  }
+
+  /// Updates an existing tee's name/rating/slope and per-hole yardage.
+  /// Pars are intentionally not editable here — they're fixed per course,
+  /// not per tee (see addTee). [holeYardages], if provided, must have
+  /// exactly 18 entries matching hole 1 through 18 in order.
+  Future<void> updateTee({
+    required String teeId,
+    required String name,
+    double? rating,
+    int? slope,
+    List<int?>? holeYardages,
+  }) async {
+    assert(holeYardages == null || holeYardages.length == 18);
+
+    final hasFullYardage = holeYardages != null && holeYardages.every((y) => y != null);
+    final totalYardage = hasFullYardage ? holeYardages.cast<int>().reduce((a, b) => a + b) : null;
+
+    await _client.from('tees').update({
+      'name': name,
+      'rating': rating,
+      'slope': slope,
+      'yardage': totalYardage,
+    }).eq('id', teeId);
+
+    if (holeYardages != null) {
+      final holes = await getHolesForTee(teeId);
+      for (final hole in holes) {
+        await _client
+            .from('holes')
+            .update({'yardage': holeYardages[hole.holeNumber - 1]})
+            .eq('id', hole.id);
+      }
+    }
   }
 }

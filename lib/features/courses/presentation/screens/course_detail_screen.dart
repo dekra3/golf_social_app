@@ -83,6 +83,16 @@ class _CourseDetailScreenState extends ConsumerState<CourseDetailScreen> {
                               if (tee.slope != null) 'Slope ${tee.slope}',
                             ].join(' • '),
                           ),
+                          trailing: !isAdmin
+                              ? null
+                              : IconButton(
+                                  icon: const Icon(Icons.edit_outlined),
+                                  tooltip: 'Edit tee',
+                                  onPressed: () async {
+                                    await context.push('/tees/${tee.id}/edit');
+                                    _load();
+                                  },
+                                ),
                         ),
                       ),
                     ),

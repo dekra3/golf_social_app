@@ -7,6 +7,27 @@ import '../providers/rounds_provider.dart';
 class RoundHistoryScreen extends ConsumerWidget {
   const RoundHistoryScreen({super.key});
 
+  Future<void> _confirmDelete(BuildContext context, WidgetRef ref, String roundId) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete this round?'),
+        content: const Text('This removes the round and all its hole scores. This can\'t be undone.'),
+        actions: [
+          TextButton(onPressed: () => Navigator.of(context).pop(false), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Delete', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+
+    await ref.read(roundsRepositoryProvider).deleteRound(roundId);
+    ref.invalidate(roundHistoryProvider);
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final roundsAsync = ref.watch(roundHistoryProvider);
@@ -36,9 +57,19 @@ class RoundHistoryScreen extends ConsumerWidget {
               return ListTile(
                 title: Text(round.courseName ?? 'Unknown course'),
                 subtitle: Text(dateStr),
-                trailing: Text(
-                  round.totalScore?.toString() ?? 'In progress',
-                  style: const TextStyle(fontWeight: FontWeight.w600),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      round.totalScore?.toString() ?? 'In progress',
+                      style: const TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.delete_outline),
+                      tooltip: 'Delete round',
+                      onPressed: () => _confirmDelete(context, ref, round.id),
+                    ),
+                  ],
                 ),
                 onTap: () => context.push('/rounds/${round.id}/summary'),
               );

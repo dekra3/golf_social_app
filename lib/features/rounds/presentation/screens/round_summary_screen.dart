@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../courses/presentation/providers/courses_provider.dart';
 import '../../data/models/hole_score_model.dart';
@@ -43,6 +44,28 @@ class _RoundSummaryScreenState extends ConsumerState<RoundSummaryScreen> {
     });
   }
 
+  Future<void> _confirmDelete() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete this round?'),
+        content: const Text('This removes the round and all its hole scores. This can\'t be undone.'),
+        actions: [
+          TextButton(onPressed: () => Navigator.of(context).pop(false), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Delete', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+
+    await ref.read(roundsRepositoryProvider).deleteRound(widget.roundId);
+    ref.invalidate(roundHistoryProvider);
+    if (mounted) context.go('/home');
+  }
+
   @override
   Widget build(BuildContext context) {
     final round = _round;
@@ -63,7 +86,24 @@ class _RoundSummaryScreenState extends ConsumerState<RoundSummaryScreen> {
                 : '$diff';
 
     return Scaffold(
-      appBar: AppBar(title: Text(round.courseName ?? 'Round summary')),
+      appBar: AppBar(
+        title: Text(round.courseName ?? 'Round summary'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.edit_outlined),
+            tooltip: 'Edit round',
+            onPressed: () async {
+              await context.push('/rounds/${widget.roundId}/edit');
+              _load();
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.delete_outline),
+            tooltip: 'Delete round',
+            onPressed: _confirmDelete,
+          ),
+        ],
+      ),
       body: ListView(
         padding: const EdgeInsets.all(24),
         children: [

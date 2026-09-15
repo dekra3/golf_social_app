@@ -64,6 +64,31 @@ class _ScoreEntryScreenState extends ConsumerState<ScoreEntryScreen> {
     }
   }
 
+  Future<void> _cancelRound() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Cancel this round?'),
+        content: const Text('Your progress on this round will be deleted. This can\'t be undone.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Keep playing'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Cancel round', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+
+    await ref.read(roundsRepositoryProvider).deleteRound(widget.roundId);
+    ref.invalidate(roundHistoryProvider);
+    if (mounted) context.go('/home');
+  }
+
   @override
   Widget build(BuildContext context) {
     final holes = _holes;
@@ -76,7 +101,16 @@ class _ScoreEntryScreenState extends ConsumerState<ScoreEntryScreen> {
     final isLastHole = _currentIndex == holes.length - 1;
 
     return Scaffold(
-      appBar: AppBar(title: Text('Hole ${hole.holeNumber} of ${holes.length}')),
+      appBar: AppBar(
+        title: Text('Hole ${hole.holeNumber} of ${holes.length}'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.close),
+            tooltip: 'Cancel round',
+            onPressed: _cancelRound,
+          ),
+        ],
+      ),
       body: Padding(
         padding: const EdgeInsets.all(24),
         child: Column(

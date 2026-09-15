@@ -15,6 +15,7 @@ import '../features/courses/presentation/screens/add_course_screen.dart';
 import '../features/courses/presentation/screens/add_tee_screen.dart';
 import '../features/courses/presentation/screens/course_detail_screen.dart';
 import '../features/courses/presentation/screens/course_list_screen.dart';
+import '../features/courses/presentation/screens/edit_tee_screen.dart';
 import '../features/feed/presentation/screens/create_post_screen.dart';
 import '../features/feed/presentation/screens/post_detail_screen.dart';
 import '../features/groups/presentation/screens/create_group_screen.dart';
@@ -22,6 +23,7 @@ import '../features/groups/presentation/screens/discover_groups_screen.dart';
 import '../features/groups/presentation/screens/group_detail_screen.dart';
 import '../features/groups/presentation/screens/invite_to_group_screen.dart';
 import '../features/profile/presentation/screens/edit_profile_screen.dart';
+import '../features/rounds/presentation/screens/edit_round_screen.dart';
 import '../features/rounds/presentation/screens/round_summary_screen.dart';
 import '../features/rounds/presentation/screens/score_entry_screen.dart';
 import '../features/rounds/presentation/screens/start_round_screen.dart';
@@ -85,6 +87,10 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => AddTeeScreen(courseId: state.pathParameters['courseId']!),
       ),
       GoRoute(
+        path: '/tees/:teeId/edit',
+        builder: (context, state) => EditTeeScreen(teeId: state.pathParameters['teeId']!),
+      ),
+      GoRoute(
         path: '/rounds/start/:courseId',
         builder: (context, state) =>
             StartRoundScreen(courseId: state.pathParameters['courseId']!),
@@ -100,6 +106,10 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/rounds/:roundId/summary',
         builder: (context, state) =>
             RoundSummaryScreen(roundId: state.pathParameters['roundId']!),
+      ),
+      GoRoute(
+        path: '/rounds/:roundId/edit',
+        builder: (context, state) => EditRoundScreen(roundId: state.pathParameters['roundId']!),
       ),
       GoRoute(path: '/connections/search', builder: (context, state) => const GolferSearchScreen()),
       GoRoute(
